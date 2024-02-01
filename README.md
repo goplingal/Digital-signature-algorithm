@@ -1,2 +1,2 @@
 # Digital-signature-algorithm
-applications for creating, verifying and deleting digital signatures.
+Applications for creating, verifying and deleting digital signatures.
