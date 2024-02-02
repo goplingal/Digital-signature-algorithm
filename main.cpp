@@ -352,6 +352,135 @@ void Delete_Sign(std::string last_line, std::string filename)
 	}
 }
 
+void Delete_Loop(std::string last_line, std::string filename, std::string key, std::ifstream &r)
+{
+	while (true)
+	{
+		if (key == "y")
+		{
+			std::string input_name;
+			while (true)
+			{
+				std::cout << "Do you want to name your file? Otherwise it will be named by default. Input file name or '.default'" << std::endl;
+				std::cin >> input_name;
+				if (input_name == ".default")
+				{
+					Delete_Sign(last_line, filename);
+					break;
+				}
+				else
+				{
+					std::ofstream input_file;
+					input_file.open(input_name);
+					if (input_file.is_open())
+					{
+
+						std::fstream from_f;
+						std::fstream to_f;
+						std::string temp;
+						from_f.open(filename, std::ios::in);
+						to_f.open(input_name, std::ios::out);
+						while (std::getline(from_f, temp))
+						{
+							if (temp != last_line)
+							{
+								to_f << temp << std::endl;
+							}
+						}
+						std::cout << "Signature has been deleted" << std::endl;
+						from_f.close();
+						to_f.close();
+						input_file.close();
+						break;
+					}
+					else
+					{
+						std::cout << "Invalid filename" << std::endl;
+						input_file.close();
+					}
+				}
+			}
+			break;
+		}
+		else if (key == "n")
+		{
+			r.clear();
+			r.close();
+			break;
+		}
+		r.clear();
+		r.close();
+		std::cout << "Invalid input. Use 'y' or 'n' " << std::endl;
+		std::cin >> key;
+	}
+}
+
+void Add_Signature_Loop(std::string s, std::string to_hash, std::string filename, std::string key, std::ifstream& r)
+{
+	while (true)
+	{
+		if (key == "y")
+		{
+			r.clear();
+			r.close();
+			Sign_Params sp1 = Make_Sign(to_hash);
+			if (sp1.Get_s() == 0)
+			{
+				break;
+			}
+			std::string input_name;
+			while (true)
+			{
+				std::cout << "Do you want to name your file? Otherwise it will be named by default. Input file name or '.default'" << std::endl;
+				std::cin >> input_name;
+				if (input_name == ".default")
+				{
+					Create_File(sp1, s, filename);
+					break;
+				}
+				else
+				{
+					std::ofstream input_file;
+					input_file.open(input_name);
+					if (input_file.is_open())
+					{
+						std::fstream from_f;
+						std::fstream to_f;
+						std::string temp;
+						from_f.open(filename, std::ios::in);
+						to_f.open(input_name, std::ios::out);
+						while (std::getline(from_f, temp))
+						{
+							to_f << temp << std::endl;
+						}
+						to_f << '\n' + s + std::to_string(sp1.Get_q()) + ":" + std::to_string(sp1.Get_p()) + ":" + std::to_string(unsigned long long(sp1.Get_g())) + ":" + std::to_string(unsigned long long(sp1.Get_y())) + ":" + std::to_string(unsigned long long(sp1.Get_r())) + ":" + std::to_string(unsigned long long(sp1.Get_s()));
+						std::cout << "Signature has been created" << std::endl;
+						from_f.close();
+						to_f.close();
+						input_file.close();
+						break;
+					}
+					else
+					{
+						std::cout << "Invalid filename" << std::endl;
+						input_file.close();
+					}
+				}
+			}
+			break;
+		}
+		else if (key == "n")
+		{
+			r.clear();
+			r.close();
+			break;
+		}
+		std::cout << "Invalid input. Use 'y' or 'n' " << std::endl;
+		std::cin >> key;
+	}
+}
+
+
 int main()
 {
 	Sign_Params sp;
@@ -425,65 +554,7 @@ int main()
 						std::cout << "Do you want to delete signature? y/n" << std::endl;
 						std::string key;
 						std::cin >> key;
-						while (true)
-						{
-							if (key == "y")
-							{
-								std::string input_name;
-								while (true)
-								{
-									std::cout << "Do you want to name your file? Otherwise it will be named by default. Input file name or '.default'" << std::endl;
-									std::cin >> input_name;
-									if (input_name == ".default")
-									{
-										Delete_Sign(last_line, filename);
-										break;
-									}
-									else
-									{
-										std::ofstream input_file;
-										input_file.open(input_name);
-										if (input_file.is_open())
-										{
-
-											std::fstream from_f;
-											std::fstream to_f;
-											std::string temp;
-											from_f.open(filename, std::ios::in);
-											to_f.open(input_name, std::ios::out);
-											while (std::getline(from_f, temp))
-											{
-												if (temp != last_line)
-												{
-													to_f << temp << std::endl;
-												}
-											}
-											std::cout << "Signature has been deleted" << std::endl;
-											from_f.close();
-											to_f.close();
-											input_file.close();
-											break;
-										}
-										else
-										{
-											std::cout << "Invalid filename" << std::endl;
-											input_file.close();
-										}
-									}
-								}
-								break;
-							}
-							else if (key == "n")
-							{
-								r.clear();
-								r.close();
-								break;
-							}
-							r.clear();
-							r.close();
-							std::cout << "Invalid input. Use 'y' or 'n' " << std::endl;
-							std::cin >> key;
-						}
+						Delete_Loop(last_line, filename, key, r);
 					}
 					else
 					{
@@ -493,66 +564,7 @@ int main()
 						std::cout << "Do you want to delete invalid signature? y/n" << std::endl;
 						std::string key;
 						std::cin >> key;
-						while (true)
-						{
-							if (key == "y")
-							{
-								std::string input_name;
-								while (true)
-								{
-									std::cout << "Do you want to name your file? Otherwise it will be named by default. Input file name or '.default'" << std::endl;
-									std::cin >> input_name;
-									if (input_name == ".default")
-									{
-										Delete_Sign(last_line, filename);
-										break;
-									}
-									else
-									{
-										std::ofstream input_file;
-										input_file.open(input_name);
-										if (input_file.is_open())
-										{
-
-											std::fstream from_f;
-											std::fstream to_f;
-											std::string temp;
-											from_f.open(filename, std::ios::in);
-											to_f.open(input_name, std::ios::out);
-											while (std::getline(from_f, temp))
-											{
-												if (temp != last_line)
-												{
-													to_f << temp << std::endl;
-												}
-											}
-											std::cout << "Signature has been deleted" << std::endl;
-											from_f.close();
-											to_f.close();
-											input_file.close();
-											break;
-										}
-										else
-										{
-											std::cout << "Invalid filename" << std::endl;
-											input_file.close();
-										}
-									}
-								}
-								break;
-							}
-							else if (key == "n")
-							{
-								r.clear();
-								r.close();
-								break;
-							}
-							r.clear();
-							r.close();
-							std::cout << "Invalid input. Use 'y' or 'n' " << std::endl;
-							std::cin >> key;
-						}
-
+						Delete_Loop(last_line, filename, key, r);
 					}
 				}
 				else
@@ -577,67 +589,7 @@ int main()
 					std::cout << "Do you want to add signature? y/n" << std::endl;
 					std::string key;
 					std::cin >> key;
-					while (true)
-					{
-						if (key == "y")
-						{
-							r.clear();
-							r.close();
-							Sign_Params sp1 = Make_Sign(to_hash);
-							if (sp1.Get_s() == 0)
-							{
-								break;
-							}
-							std::string input_name;
-							while (true)
-							{
-								std::cout << "Do you want to name your file? Otherwise it will be named by default. Input file name or '.default'" << std::endl;
-								std::cin >> input_name;
-								if (input_name == ".default")
-								{
-									Create_File(sp1, s, filename);
-									break;
-								}
-								else
-								{
-									std::ofstream input_file;
-									input_file.open(input_name);
-									if (input_file.is_open())
-									{
-										std::fstream from_f;
-										std::fstream to_f;
-										std::string temp;
-										from_f.open(filename, std::ios::in);
-										to_f.open(input_name, std::ios::out);
-										while (std::getline(from_f, temp))
-										{
-											to_f << temp << std::endl;
-										}
-										to_f << '\n' + s + std::to_string(sp1.Get_q()) + ":" + std::to_string(sp1.Get_p()) + ":" + std::to_string(unsigned long long(sp1.Get_g())) + ":" + std::to_string(unsigned long long(sp1.Get_y())) + ":" + std::to_string(unsigned long long(sp1.Get_r())) + ":" + std::to_string(unsigned long long(sp1.Get_s()));
-										std::cout << "Signature has been created" << std::endl;
-										from_f.close();
-										to_f.close();
-										input_file.close();
-										break;
-									}
-									else
-									{
-										std::cout << "Invalid filename" << std::endl;
-										input_file.close();
-									}
-								}
-							}
-							break;
-						}
-						else if (key == "n")
-						{
-							r.clear();
-							r.close();
-							break;
-						}
-						std::cout << "Invalid input. Use 'y' or 'n' " << std::endl;
-						std::cin >> key;
-					}
+					Add_Signature_Loop(s, to_hash, filename, key, r);
 				}
 				else
 				{
